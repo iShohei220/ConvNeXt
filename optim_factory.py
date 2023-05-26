@@ -21,6 +21,7 @@ from timm.optim.rmsprop_tf import RMSpropTF
 from timm.optim.sgdp import SGDP
 
 import json
+from adopt import ADOPT
 
 try:
     from apex.optimizers import FusedNovoGrad, FusedAdam, FusedLAMB, FusedSGD
@@ -31,7 +32,7 @@ except ImportError:
 
 def get_num_layer_for_convnext(var_name):
     """
-    Divide [3, 3, 27, 3] layers into 12 groups; each group is three 
+    Divide [3, 3, 27, 3] layers into 12 groups; each group is three
     consecutive blocks, including possible neighboring downsample layers;
     adapted from https://github.com/microsoft/unilm/blob/master/beit/optim_factory.py
     """
@@ -52,7 +53,7 @@ def get_num_layer_for_convnext(var_name):
         if stage_id == 0 or stage_id == 1:
             layer_id = stage_id + 1
         elif stage_id == 2:
-            layer_id = 3 + block_id // 3 
+            layer_id = 3 + block_id // 3
         elif stage_id == 3:
             layer_id = 12
         return layer_id
@@ -187,6 +188,8 @@ def create_optimizer(args, model, get_num_layer=None, get_layer_scale=None, filt
     elif opt_lower == 'fusednovograd':
         opt_args.setdefault('betas', (0.95, 0.98))
         optimizer = FusedNovoGrad(parameters, **opt_args)
+    elif opt_lower == 'adopt':
+        optimizer = ADOPT(parameters, decoupled=True)
     else:
         assert False and "Invalid optimizer"
 

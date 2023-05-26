@@ -34,7 +34,7 @@ import models.convnext_isotropic
 
 def str2bool(v):
     """
-    Converts string to bool type; enables command line 
+    Converts string to bool type; enables command line
     arguments in the format of '--arg1 true --arg2 false'
     """
     if isinstance(v, bool):
@@ -71,7 +71,8 @@ def get_args_parser():
     parser.add_argument('--model_ema_eval', type=str2bool, default=False, help='Using ema to eval during training.')
 
     # Optimization parameters
-    parser.add_argument('--opt', default='adamw', type=str, metavar='OPTIMIZER',
+    # parser.add_argument('--opt', default='adamw', type=str, metavar='OPTIMIZER',
+    parser.add_argument('--opt', default='adopt', type=str, metavar='OPTIMIZER',
                         help='Optimizer (default: "adamw"')
     parser.add_argument('--opt_eps', default=1e-8, type=float, metavar='EPSILON',
                         help='Optimizer Epsilon (default: 1e-8)')
@@ -188,7 +189,7 @@ def get_args_parser():
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
 
-    parser.add_argument('--use_amp', type=str2bool, default=False, 
+    parser.add_argument('--use_amp', type=str2bool, default=False,
                         help="Use PyTorch's AMP (Automatic Mixed Precision) or not")
 
     # Weights and Biases arguments
@@ -276,9 +277,9 @@ def main(args):
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
 
     model = create_model(
-        args.model, 
-        pretrained=False, 
-        num_classes=args.nb_classes, 
+        args.model,
+        pretrained=False,
+        num_classes=args.nb_classes,
         drop_path_rate=args.drop_path,
         layer_scale_init_value=args.layer_scale_init_value,
         head_init_scale=args.head_init_scale,
@@ -349,7 +350,7 @@ def main(args):
 
     optimizer = create_optimizer(
         args, model_without_ddp, skip_list=None,
-        get_num_layer=assigner.get_layer_id if assigner is not None else None, 
+        get_num_layer=assigner.get_layer_id if assigner is not None else None,
         get_layer_scale=assigner.get_scale if assigner is not None else None)
 
     loss_scaler = NativeScaler() # if args.use_amp is False, this won't be used
